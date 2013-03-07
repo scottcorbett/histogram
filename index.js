@@ -1,0 +1,118 @@
+module.exports = Histogram
+
+function Histogram(conf){
+	  if (!(this instanceof Histogram)) return new Histogram(conf);
+	  
+	  this.histogram = [];
+	  this.conf = {
+		  width: (conf && conf.width || 255)
+		  , height:  (conf && conf.height || 128)
+		  , red:  (conf && conf.red || "#d55")
+		  , green:  (conf && conf.green || "#5d5")
+		  , blue:  (conf && conf.blue || "#55d")
+		  , black:  (conf && conf.black || "#555")
+	  };
+	  this.canvas = document.createElement('canvas');
+	  this.context = this.canvas.getContext('2d');	  
+	  this.context.canvas.width = this.conf.width;
+	  this.context.canvas.height = this.conf.height;
+	  
+	  this.clearRGB();
+}
+
+Histogram.prototype.forImg = function(source){
+	var srcCanvas = document.createElement("canvas");
+	var ctx = srcCanvas.getContext('2d');
+   	ctx.canvas.width = source.width;
+	ctx.canvas.height = source.height;
+	ctx.drawImage(source, 0, 0);
+	return this.forCanvas(srcCanvas);
+};
+
+Histogram.prototype.forCanvas = function(source){
+	var ctx = source.getContext('2d');
+	var img = ctx.getImageData(0, 0, ctx.canvas.width, ctx.canvas.height);
+    
+   	for (var i=0; i<img.data.length; i=i+4){
+   		this.setRGB({
+   			r: img.data[i]
+   			, g: img.data[i+1]
+   			, b: img.data[i+2]
+   		});
+   	}
+   	
+   	return this.draw();
+};
+
+Histogram.prototype.clearRGB = function(){
+	for (var i=0; i<=255; i++){
+		this.histogram[i] = {
+			r: 0
+			, g: 0
+			, b: 0
+		};
+	}
+};
+
+Histogram.prototype.setRGB = function(val){
+	this.histogram[min(255, max(0, val.r))].r++;
+	this.histogram[min(255, max(0, val.g))].g++;
+	this.histogram[min(255, max(0, val.b))].b++;
+};
+
+Histogram.prototype.draw = function(){	
+	var m=0;
+	for (var i = 1; i<255; i++){
+		m = max(m, max(this.histogram[i].r, max(this.histogram[i].g, this.histogram[i].b)));
+	}
+	
+	this.context.globalCompositeOperation="lighter";
+
+	//draw red
+	this.drawPoly(this.conf.red, function(val){
+		return val.r / m;
+	});
+	
+	//draw green
+	this.drawPoly(this.conf.green, function(val){
+		return val.g / m;
+	});
+	
+	//draw blue
+	this.drawPoly(this.conf.blue, function(val){
+		return val.b / m;
+	});
+	
+	this.context.globalCompositeOperation="source-over";	
+	
+	//draw black
+	this.drawPoly(this.conf.black, function(val){
+		var r = val.r / m;
+		var g = val.g / m;
+		var b = val.b / m;
+		return min(r,min(g,b));					
+	});
+	
+	return this.canvas.toDataURL();
+};
+
+Histogram.prototype.drawPoly = function(colour, val){
+	var w = this.context.canvas.width;
+	var h = this.context.canvas.height;
+	this.context.beginPath();		
+	this.context.moveTo(0, h);		
+	this.context.fillStyle = colour;
+	for (var x = 0; x<=255; x++){
+		this.context.lineTo((w/255)*x,(h-(val(this.histogram[x])*h)));						
+	}			
+	this.context.lineTo(w, h);
+	this.context.closePath();
+	this.context.fill();
+};
+
+function max(a, b){
+	return a>b?a:b;
+}
+function min(a, b){
+	return a>b?b:a;
+}

@@ -1,0 +1,13 @@
+{
+  "name": "histogram",
+  "repo": "scottcorbett/histogram",
+  "description": "create image histograms",
+  "version": "0.0.1",
+  "keywords": ["canvas", "histogram"],
+  "dependencies": {},
+  "development": {},
+  "license": "MIT",
+  "scripts": [
+    "index.js"
+  ]
+}

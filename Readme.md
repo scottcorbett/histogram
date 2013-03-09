@@ -39,6 +39,9 @@
       blue: #55d, // colour used for blue in the graph.
       black: #555 // colour used for portions of the graph overlapped by all colours  
     }
+    
+###.setConf(conf)
+   Sets configuration used for drawing, expects an object the same as the constructor conf.
    
 ###.forImg(source)
    Creates an image histogram based off the img object passed in and returns a data url.

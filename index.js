@@ -5,20 +5,26 @@ function Histogram(conf){
 	  
 	  this.histogram = [];
 	  this.conf = {
-		  width: (conf && conf.width || 255)
-		  , height:  (conf && conf.height || 128)
-		  , red:  (conf && conf.red || "#d55")
-		  , green:  (conf && conf.green || "#5d5")
-		  , blue:  (conf && conf.blue || "#55d")
-		  , black:  (conf && conf.black || "#555")
+		  width: 255
+		  , height: 128
+		  , red: "#d55"
+		  , green: "#5d5"
+		  , blue: "#55d"
+		  , black: "#555"
 	  };
+	  this.setConf(conf);
 	  this.canvas = document.createElement('canvas');
-	  this.context = this.canvas.getContext('2d');	  
-	  this.context.canvas.width = this.conf.width;
-	  this.context.canvas.height = this.conf.height;
-	  
+	  this.context = this.canvas.getContext('2d');	  	  
 	  this.clearRGB();
 }
+
+Histogram.prototype.setConf = function(conf){	
+	for (name in conf){
+		this.conf[name] = conf[name];
+	}
+	return this;
+};
+	
 
 Histogram.prototype.forImg = function(source){
 	var srcCanvas = document.createElement("canvas");
@@ -60,12 +66,17 @@ Histogram.prototype.setRGB = function(val){
 	this.histogram[Math.min(255, Math.max(0, val.b))].b++;
 };
 
-Histogram.prototype.draw = function(){	
+Histogram.prototype.draw = function(){
+	this.context.canvas.width = this.conf.width;
+	this.context.canvas.height = this.conf.height;	
+	
+	//find the largest tone value, ignoring the extremes at index 0 && 255.
 	var m=0;
 	for (var i = 1; i<255; i++){
 		m = Math.max(m, this.histogram[i].r, this.histogram[i].g, this.histogram[i].b);
 	}
 	
+	//make the colour polys blend
 	this.context.globalCompositeOperation="lighter";
 
 	//draw red
@@ -83,6 +94,7 @@ Histogram.prototype.draw = function(){
 		return val.b / m;
 	});
 	
+	//make the black poly overwrite
 	this.context.globalCompositeOperation="source-over";	
 	
 	//draw black

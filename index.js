@@ -1,4 +1,4 @@
-module.exports = Histogram
+module.exports = Histogram;
 
 function Histogram(conf){
 	  if (!(this instanceof Histogram)) return new Histogram(conf);
@@ -55,15 +55,15 @@ Histogram.prototype.clearRGB = function(){
 };
 
 Histogram.prototype.setRGB = function(val){
-	this.histogram[min(255, max(0, val.r))].r++;
-	this.histogram[min(255, max(0, val.g))].g++;
-	this.histogram[min(255, max(0, val.b))].b++;
+	this.histogram[Math.min(255, Math.max(0, val.r))].r++;
+	this.histogram[Math.min(255, Math.max(0, val.g))].g++;
+	this.histogram[Math.min(255, Math.max(0, val.b))].b++;
 };
 
 Histogram.prototype.draw = function(){	
 	var m=0;
 	for (var i = 1; i<255; i++){
-		m = max(m, max(this.histogram[i].r, max(this.histogram[i].g, this.histogram[i].b)));
+		m = Math.max(m, this.histogram[i].r, this.histogram[i].g, this.histogram[i].b);
 	}
 	
 	this.context.globalCompositeOperation="lighter";
@@ -90,7 +90,7 @@ Histogram.prototype.draw = function(){
 		var r = val.r / m;
 		var g = val.g / m;
 		var b = val.b / m;
-		return min(r,min(g,b));					
+		return Math.min(r,g,b);					
 	});
 	
 	return this.canvas.toDataURL();
@@ -109,10 +109,3 @@ Histogram.prototype.drawPoly = function(colour, val){
 	this.context.closePath();
 	this.context.fill();
 };
-
-function max(a, b){
-	return a>b?a:b;
-}
-function min(a, b){
-	return a>b?b:a;
-}

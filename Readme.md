@@ -1,6 +1,6 @@
 # histogram
 
-  Component to create image histograms from images or canvas objects.
+  Component(1) component to create image histograms from images or canvas objects. [Example](http://hexhour.com/toys/histogram/)
 
 ## Installation
 

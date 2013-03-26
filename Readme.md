@@ -1,6 +1,6 @@
 # histogram
 
-  Component(1) component to create image histograms from images or canvas objects. [Example](http://hexhour.com/toys/histogram/)
+  A CommonJS module written for component(1) to create image histograms from images or canvas objects. [Example](http://hexhour.com/toys/histogram/)
 
 ## Installation
 
